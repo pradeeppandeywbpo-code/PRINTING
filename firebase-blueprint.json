@@ -1,0 +1,162 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Authenticated PrintForge user profile.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Authenticated Firebase UID."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User display name."
+        },
+        "email": {
+          "type": "string",
+          "description": "User email address."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when created (FieldValue.serverTimestamp())."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when last updated (FieldValue.serverTimestamp())."
+        }
+      },
+      "required": ["userId", "displayName", "createdAt", "updatedAt"]
+    },
+    "CloudSavedPrinter": {
+      "title": "CloudSavedPrinter",
+      "description": "Saved printer configuration synced across devices.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner Firebase UID."
+        },
+        "printerKey": {
+          "type": "string",
+          "description": "Original hardware/network printer identifier."
+        },
+        "name": {
+          "type": "string",
+          "description": "Printer display name."
+        },
+        "connectionType": {
+          "type": "string",
+          "enum": ["USB_OTG", "WIFI_MDNS", "WIFI_RAW", "BLUETOOTH"],
+          "description": "Hardware transport type."
+        },
+        "address": {
+          "type": "string",
+          "description": "IP address, USB device path, or Bluetooth MAC."
+        },
+        "port": {
+          "type": "integer",
+          "description": "Network port (e.g. 9100 or 631)."
+        },
+        "protocol": {
+          "type": "string",
+          "enum": ["AUTO", "PCL_RASTER", "POSTSCRIPT", "ESC_POS", "PDF_STREAM"],
+          "description": "Default print driver protocol."
+        },
+        "details": {
+          "type": "string",
+          "description": "Hardware metadata summary."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when created (FieldValue.serverTimestamp())."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when updated (FieldValue.serverTimestamp())."
+        }
+      },
+      "required": ["userId", "printerKey", "name", "connectionType", "address", "port", "protocol", "createdAt", "updatedAt"]
+    },
+    "CloudPrintJob": {
+      "title": "CloudPrintJob",
+      "description": "Immutable print spooler job telemetry log.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner Firebase UID."
+        },
+        "documentTitle": {
+          "type": "string",
+          "description": "Printed document title."
+        },
+        "printerName": {
+          "type": "string",
+          "description": "Target printer name."
+        },
+        "connectionType": {
+          "type": "string",
+          "description": "Transport label."
+        },
+        "protocolUsed": {
+          "type": "string",
+          "description": "Driver protocol tag."
+        },
+        "paperSize": {
+          "type": "string",
+          "description": "Paper size label."
+        },
+        "pageCount": {
+          "type": "integer",
+          "description": "Number of printed pages."
+        },
+        "copies": {
+          "type": "integer",
+          "description": "Number of copies."
+        },
+        "dpi": {
+          "type": "integer",
+          "description": "Render resolution in DPI."
+        },
+        "bytesTransferred": {
+          "type": "integer",
+          "description": "Total payload bytes spooled."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Completed", "Failed"],
+          "description": "Spooler completion status."
+        },
+        "errorMessage": {
+          "type": "string",
+          "description": "Failure reason if status is Failed."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when job finished (FieldValue.serverTimestamp())."
+        }
+      },
+      "required": ["userId", "documentTitle", "printerName", "connectionType", "protocolUsed", "paperSize", "pageCount", "copies", "dpi", "bytesTransferred", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "User profile document isolated to owner."
+    },
+    "/users/{userId}/saved_printers/{printerId}": {
+      "schema": { "$ref": "#/entities/CloudSavedPrinter" },
+      "description": "User's cloud-synced printer configurations."
+    },
+    "/users/{userId}/print_jobs/{jobId}": {
+      "schema": { "$ref": "#/entities/CloudPrintJob" },
+      "description": "User's cloud-synced print job history."
+    }
+  }
+}

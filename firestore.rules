@@ -1,0 +1,123 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidUserProfile(data) {
+      return data.userId is string && data.userId == request.auth.uid &&
+             data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 100 &&
+             (!('email' in data) || (data.email is string && data.email.size() <= 200));
+    }
+
+    function isValidSavedPrinter(data) {
+      return data.userId is string && data.userId == request.auth.uid &&
+             data.printerKey is string && data.printerKey.size() >= 1 && data.printerKey.size() <= 200 &&
+             data.name is string && data.name.size() >= 1 && data.name.size() <= 120 &&
+             data.connectionType in ['USB_OTG', 'WIFI_MDNS', 'WIFI_RAW', 'BLUETOOTH'] &&
+             data.address is string && data.address.size() >= 1 && data.address.size() <= 200 &&
+             data.port is int && data.port >= 0 && data.port <= 65535 &&
+             data.protocol in ['AUTO', 'PCL_RASTER', 'POSTSCRIPT', 'ESC_POS', 'PDF_STREAM'] &&
+             (!('details' in data) || (data.details is string && data.details.size() <= 300));
+    }
+
+    function isValidPrintJob(data) {
+      return data.userId is string && data.userId == request.auth.uid &&
+             data.documentTitle is string && data.documentTitle.size() >= 1 && data.documentTitle.size() <= 200 &&
+             data.printerName is string && data.printerName.size() >= 1 && data.printerName.size() <= 120 &&
+             data.connectionType is string && data.connectionType.size() >= 1 && data.connectionType.size() <= 60 &&
+             data.protocolUsed is string && data.protocolUsed.size() >= 1 && data.protocolUsed.size() <= 40 &&
+             data.paperSize is string && data.paperSize.size() >= 1 && data.paperSize.size() <= 60 &&
+             data.pageCount is int && data.pageCount >= 1 && data.pageCount <= 10000 &&
+             data.copies is int && data.copies >= 1 && data.copies <= 99 &&
+             data.dpi is int && data.dpi >= 72 && data.dpi <= 1200 &&
+             data.bytesTransferred is int && data.bytesTransferred >= 0 &&
+             data.status in ['Completed', 'Failed'] &&
+             (!('errorMessage' in data) || (data.errorMessage is string && data.errorMessage.size() <= 500));
+    }
+
+    match /users/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       incoming().keys().hasAll(['userId', 'displayName', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['userId', 'displayName', 'email', 'createdAt', 'updatedAt']) &&
+                       incoming().createdAt is timestamp && incoming().createdAt <= request.time &&
+                       incoming().updatedAt is timestamp && incoming().updatedAt <= request.time &&
+                       isValidUserProfile(incoming());
+
+      allow update: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidUserProfile(incoming()) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().updatedAt is timestamp && incoming().updatedAt <= request.time &&
+                       incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'email', 'updatedAt']);
+
+      allow delete: if isOwner(userId) && isValidId(userId);
+
+      match /saved_printers/{printerId} {
+        allow get: if isOwner(userId) && isValidId(printerId);
+        allow list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(printerId) &&
+                         incoming().keys().hasAll(['userId', 'printerKey', 'name', 'connectionType', 'address', 'port', 'protocol', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['userId', 'printerKey', 'name', 'connectionType', 'address', 'port', 'protocol', 'details', 'createdAt', 'updatedAt']) &&
+                         incoming().createdAt is timestamp && incoming().createdAt <= request.time &&
+                         incoming().updatedAt is timestamp && incoming().updatedAt <= request.time &&
+                         isValidSavedPrinter(incoming());
+
+        allow update: if isOwner(userId) &&
+                         isValidId(printerId) &&
+                         isValidSavedPrinter(incoming()) &&
+                         incoming().userId == existing().userId &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().updatedAt is timestamp && incoming().updatedAt <= request.time &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['printerKey', 'name', 'connectionType', 'address', 'port', 'protocol', 'details', 'updatedAt']);
+
+        allow delete: if isOwner(userId) && isValidId(printerId);
+      }
+
+      match /print_jobs/{jobId} {
+        allow get: if isOwner(userId) && isValidId(jobId);
+        allow list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(jobId) &&
+                         incoming().keys().hasAll(['userId', 'documentTitle', 'printerName', 'connectionType', 'protocolUsed', 'paperSize', 'pageCount', 'copies', 'dpi', 'bytesTransferred', 'status', 'createdAt']) &&
+                         incoming().keys().hasOnly(['userId', 'documentTitle', 'printerName', 'connectionType', 'protocolUsed', 'paperSize', 'pageCount', 'copies', 'dpi', 'bytesTransferred', 'status', 'errorMessage', 'createdAt']) &&
+                         incoming().createdAt is timestamp && incoming().createdAt <= request.time &&
+                         isValidPrintJob(incoming());
+
+        allow update: if false;
+        allow delete: if isOwner(userId) && isValidId(jobId);
+      }
+    }
+  }
+}

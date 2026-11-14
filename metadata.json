@@ -1,0 +1,6 @@
+{
+  "name": "PrintForge",
+  "description": "Mobile printing app supporting USB OTG, Wi-Fi mDNS/IPP/Raw 9100, Bluetooth SPP, 300 DPI PdfRenderer rendering, and PCL/PostScript/ESC-POS/PDF spooling.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

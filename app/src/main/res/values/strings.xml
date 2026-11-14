@@ -1,0 +1,71 @@
+<resources>
+    <string name="app_name">PrintForge</string>
+    <string name="nav_printers">Printers</string>
+    <string name="nav_preview">Preview</string>
+    <string name="nav_web">Web Print</string>
+    <string name="nav_jobs">Spooler</string>
+
+    <string name="hero_title">PrintForge Studio</string>
+    <string name="hero_subtitle">Direct USB OTG, Wi-Fi mDNS/IPP, and Bluetooth SPP printing with 300 DPI bitmap flattening.</string>
+
+    <string name="section_document_sources">Document Sources</string>
+    <string name="action_pick_pdf">PDF Document</string>
+    <string name="action_pick_image">Photo / Image</string>
+    <string name="action_web_page">Web Page</string>
+    <string name="action_sample_pdf">Sample Signed PDF</string>
+
+    <string name="section_discovery">Printer Discovery</string>
+    <string name="tab_usb">USB OTG</string>
+    <string name="tab_wifi">Wi-Fi / LAN</string>
+    <string name="tab_bluetooth">Bluetooth</string>
+
+    <string name="usb_scan_btn">Scan USB Host</string>
+    <string name="usb_empty_title">No USB Printer Detected</string>
+    <string name="usb_empty_desc">Connect an HP LaserJet, Brother, Epson, or thermal printer via USB OTG cable, then tap Scan USB Host.</string>
+
+    <string name="wifi_scan_btn">Scan mDNS</string>
+    <string name="wifi_add_manual">Add IP : Port</string>
+    <string name="wifi_empty_title">Scanning LAN via mDNS…</string>
+    <string name="wifi_empty_desc">Discovers IPP (631) and Raw Socket (9100) printers on your Wi-Fi network, or add a printer IP manually.</string>
+
+    <string name="bt_scan_btn">Scan Bluetooth</string>
+    <string name="bt_empty_title">No Bluetooth Printers Listed</string>
+    <string name="bt_empty_desc">Pair your thermal or mobile SPP printer in Android settings or tap Scan Bluetooth to discover nearby devices.</string>
+
+    <string name="preview_no_doc_title">No Document Loaded</string>
+    <string name="preview_no_doc_desc">Select a PDF, image, web page, or generate the sample signed PDF from the Printers hub.</string>
+    <string name="preview_open_hub">Choose Document</string>
+
+    <string name="print_now">Print Document</string>
+    <string name="page_setup">Page Setup</string>
+    <string name="paper_size">Paper Size</string>
+    <string name="color_mode">Color Mode</string>
+    <string name="orientation">Orientation</string>
+    <string name="page_range">Page Range</string>
+    <string name="copies">Copies</string>
+    <string name="driver_protocol">Driver Stream</string>
+    <string name="preview_high_res_badge">300 DPI · PdfRenderer</string>
+    <string name="preview_image_high_res_badge">300 DPI · ImageProcessor</string>
+    <string name="preview_zoom_in">Zoom 2×</string>
+    <string name="preview_zoom_reset">Reset 1×</string>
+    <string name="preview_page_included">In print range</string>
+    <string name="preview_page_excluded">Skipped by range</string>
+    <string name="preview_all_pages">All (%1$d)</string>
+    <string name="preview_custom_range">Custom</string>
+    <string name="preview_custom_range_hint">e.g. 1-2, 4</string>
+    <string name="preview_select_printer">Select Printer</string>
+    <string name="preview_previous_page">Previous page</string>
+    <string name="preview_next_page">Next page</string>
+    <string name="preview_decrease_copies">Decrease copies</string>
+    <string name="preview_increase_copies">Increase copies</string>
+    <string name="spooler_done">Done</string>
+
+    <string name="web_url_hint">Enter URL (e.g. https://example.com)</string>
+    <string name="web_load">Go</string>
+    <string name="web_capture_print">Render 300 DPI &amp; Preview</string>
+    <string name="web_load_sample_invoice">Sample Invoice HTML</string>
+
+    <string name="jobs_empty_title">No Print Jobs Yet</string>
+    <string name="jobs_empty_desc">Completed and failed spooler transfers will appear here with protocol and byte telemetry.</string>
+    <string name="clear_history">Clear Log</string>
+</resources>
